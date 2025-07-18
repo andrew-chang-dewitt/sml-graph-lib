@@ -18,13 +18,21 @@ LIB_SRC := $(ROOT)/src
 LIB_MLB := $(LIB_SRC)/sources.mlb
 LIB_TGT := $(TGT_PRE)/lib
 
-SMLUNIT_LIB_DIR := $(ROOT)/mlton/lib/SMLUnit
+$DEPS           := $(ROOT)/.mlton
+SMLUNIT_LIB_DIR := $(DEPS)/lib/SMLUnit
 
 
 all: sml-graph-lib
 
-clean:
+clean: clean-build
+
+clean-all: clean clean-deps
+
+clean-build:
 	-$(RM) -rf $(TGT_PRE)
+
+clean-deps:
+	-$(RM) -rf $(DEPS)
 
 
 SML_GRAPH_LIB := $(LIB_TGT)/.sml-graph-lib.dummy
@@ -46,12 +54,15 @@ test: $(TST_EXE)
 	$(TST_EXE)
 
 $(TST_EXE): MLTON_FLAGS += -mlb-path-var "SMLUNIT_LIB $(SMLUNIT_LIB_DIR)"
-$(TST_EXE): $(TST_SRC)/sources.mlb $(TST_TGT)
+$(TST_EXE): $(TST_SRC)/sources.mlb $(TST_TGT) $(DEPS)
 	@echo "  [MLTON] $@"
 	@$(MLTON) $(MLTON_FLAGS) -output $@ $<
 
 $(TST_TGT):
 	mkdir -p $(TST_TGT)
+
+$(DEPS):
+	mkdir -p $(DEPS)
 
 
 # TODO: Later

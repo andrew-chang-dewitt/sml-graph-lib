@@ -5,3 +5,6 @@
 # build artifacts
 *.smi
 target/
+
+# build dependencies
+.mlton/
