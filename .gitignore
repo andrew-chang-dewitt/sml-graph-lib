@@ -8,3 +8,5 @@ target/
 
 # build dependencies
 .mlton/
+.cache/
+mlb-path-map
