@@ -10,3 +10,5 @@ target/
 .mlton/
 .cache/
 mlb-path-map
+test/sources
+*.mlb.d

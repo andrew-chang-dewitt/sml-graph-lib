@@ -1,1 +1,7 @@
+$(SML_LIB)/basis/basis.mlb
 $(SMLUNIT_LIB)/src/sources.mlb
+
+../src/sources.mlb
+test-hello.sml
+main.sml
+call-main.sml

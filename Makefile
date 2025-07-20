@@ -9,14 +9,17 @@ ROOT    := $(shell readlink -f .)
 
 TGT_PRE := $(ROOT)/target
 
-TST_SRC := $(ROOT)/test
-TST_MLB := $(TEST_SRC)/sources.mlb
-TST_TGT := $(TGT_PRE)/test
-TST_EXE := $(TST_TGT)/sml-graph-lib-test
-
-LIB_SRC := $(ROOT)/src
-LIB_MLB := $(LIB_SRC)/sources.mlb
+LIB_DIR := $(ROOT)/src
+LIB_MLB := $(LIB_DIR)/sources.mlb
 LIB_TGT := $(TGT_PRE)/lib
+LIB_DEP := $(LIB_MLB:.mlb=.mlb.d)
+
+TST_DIR := $(ROOT)/test
+TST_MLB := $(TST_DIR)/sources.mlb
+TST_TGT := $(TGT_PRE)/test
+TST_SRC := $(TST_MLB:.mlb=)
+TST_EXE := $(TST_TGT)/sml-graph-lib-test
+TST_DEP := $(TST_MLB:.mlb=.mlb.d)
 
 DEPS_DIR          := $(ROOT)/.mlton
 DEPS_BIN_DIR      := $(DEPS_DIR)/bin
@@ -43,20 +46,6 @@ all: sml-graph-lib
 
 deps: $(CACHE) $(DEPS)
 
-clean: clean-build
-
-clean-all: clean clean-deps clean-cache
-
-clean-build:
-	-$(RM) -r $(TGT_PRE)
-
-clean-deps:
-	-$(RM) -r $(DEPS_DIR)
-	-$(RM) $(MLB_PATH_MAP)
-
-clean-cache:
-	-$(RM) -r $(CACHE_DIR)
-
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 # build steps
@@ -67,7 +56,22 @@ SML_GRAPH_LIB := $(LIB_TGT)/.sml-graph-lib.dummy
 .PHONY: sml-graph-lib
 sml-graph-lib: $(SML_GRAPH_LIB)
 
-$(SML_GRAPH_LIB): $(LIB_TGT)/.%.dummy: %.mlb $(LIB_TGT)
+$(TST_MLB:.mlb=.mlb.d): MLTON_FLAGS += -mlb-path-var "SMLUNIT_LIB $(SMLUNIT_LIB_DIR)" -mlb-path-var "SML_GRAPH_LIB $(LIB_DIR)"
+%.mlb.d: %.mlb
+	@echo "  [GEN] $@"
+	@$(SHELL) -ec '$(MLTON) $(MLTON_FLAGS) -stop f $< \
+		| sed -e "1i$(<:.mlb=) $@:\\\\" -e "s|.*|  & \\\\|" -e "\$$s| \\\\||" > $@; \
+		[ -s $@ ]'
+
+ifeq ($(findstring clean,$(MAKECMDGOALS)),)
+  include $(LIB_DEP)
+endif
+
+ifneq ($(findstring test,$(MAKECMDGOALS)),)
+  include $(TST_DEP)
+endif
+
+$(SML_GRAPH_LIB): $(LIB_TGT)/.%.dummy: %.mlb | $(LIB_TGT)
 	@echo "  [MLTON] $@"
 	@$(MLTON) $(MLTON_FLAGS) -stop tc $<
 	@echo "typecheck dummy with: $(MLTON) $(MLTON_FLAGS) -stop tc $<" > $@
@@ -86,10 +90,14 @@ $(LIB_TGT):
 test: $(TST_EXE)
 	$(TST_EXE)
 
-$(TST_EXE): MLTON_FLAGS += -mlb-path-var "SMLUNIT_LIB $(SMLUNIT_LIB_DIR)"
-$(TST_EXE): $(TST_SRC)/sources.mlb $(TST_TGT) $(DEPS)
+$(TST_EXE): $(TST_SRC) | $(TST_TGT)
+	@echo "[CP] $< -> $@"
+	@cp $< $@
+
+$(TST_SRC): MLTON_FLAGS += -mlb-path-var "SMLUNIT_LIB $(SMLUNIT_LIB_DIR)" -mlb-path-var "SML_GRAPH_LIB $(LIB_DIR)"
+$(TST_SRC): $(TST_MLB) $(DEPS)
 	@echo "  [MLTON] $@"
-	@$(MLTON) $(MLTON_FLAGS) -output $@ $<
+	@$(MLTON) $(MLTON_FLAGS) $<
 
 $(TST_TGT):
 	mkdir -p $(TST_TGT)
@@ -101,7 +109,7 @@ $(TST_TGT):
 # manage dependencies
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-$(SMLUNIT_DOC): %: $(DEPS_DIR) $(SMLUNIT_CACHE) $(SMLUNIT_LIB_DIR) $(SMLDOC_EXE)
+$(SMLUNIT_DOC): %: $(SMLUNIT_CACHE) $(SMLUNIT_LIB_DIR) $(SMLDOC_EXE) | $(DEPS_DIR)
 	@echo "  [INSTALL DEPS] $@..."
 	@cd $(SMLUNIT_CACHE) \
 		&& PATH=$$PATH:$(DEPS_BIN_DIR) \
@@ -111,7 +119,7 @@ $(SMLUNIT_DOC): %: $(DEPS_DIR) $(SMLUNIT_CACHE) $(SMLUNIT_LIB_DIR) $(SMLDOC_EXE)
 			install-doc
 	@echo "  [INSTALL DEPS] $@ installed"
 
-$(SMLUNIT_LIB): $(DEPS_DIR) $(SMLUNIT_CACHE)
+$(SMLUNIT_LIB): $(SMLUNIT_CACHE) | $(DEPS_DIR)
 	@echo "  [INSTALL DEPS] $(@F)..."
 	@if [ ! -d "$(SMLUNIT_CACHE)/bin" ]; then \
 		mkdir $(SMLUNIT_CACHE)/bin; \
@@ -123,7 +131,7 @@ $(SMLUNIT_LIB): $(DEPS_DIR) $(SMLUNIT_CACHE)
 			install-nodoc
 	@echo "  [INSTALL DEPS] $(@F) installed at $@"
 
-$(SMLFORMAT_EXE): $(DEPS_DIR) $(SMLFORMAT_CACHE)
+$(SMLFORMAT_EXE): $(SMLFORMAT_CACHE) | $(DEPS_DIR)
 	@echo "  [INSTALL DEPS] $(@F)..."
 	@cd $(SMLFORMAT_CACHE) \
 		&& $(MAKE) \
@@ -132,7 +140,7 @@ $(SMLFORMAT_EXE): $(DEPS_DIR) $(SMLFORMAT_CACHE)
 			install-nodoc
 	@echo "  [INSTALL DEPS] $(@F) installed at $@"
 
-$(SMLDOC_EXE): $(DEPS_DIR) $(SMLDOC_CACHE) $(SMLUNIT_LIB_DIR) $(SMLFORMAT_EXE) $(MLB_PATH_MAP)
+$(SMLDOC_EXE): $(SMLDOC_CACHE) $(SMLUNIT_LIB_DIR) $(SMLFORMAT_EXE) $(MLB_PATH_MAP) | $(DEPS_DIR)
 	@echo "  [INSTALL DEPS] $(@F)..."
 	export MLB_PATH_MAP=$(MLB_PATH_MAP); \
 	cd $(SMLDOC_CACHE) \
@@ -145,7 +153,7 @@ $(SMLDOC_EXE): $(DEPS_DIR) $(SMLDOC_CACHE) $(SMLUNIT_LIB_DIR) $(SMLFORMAT_EXE) $
 $(MLB_PATH_MAP):
 	@printf "SMLFORMAT_LIB $(SMLFORMAT_LIB_DIR)\nSMLUNIT_LIB $(SMLUNIT_LIB_DIR)\n" >> $(MLB_PATH_MAP)
 
-$(CACHE): $(CACHE_DIR)/%: $(CACHE_DIR)
+$(CACHE): $(CACHE_DIR)/%: | $(CACHE_DIR)
 	@if [ -d "$@" ]; then \
 		echo "  [UPDATE DEPS] $(@F)..."; \
 		cd $@ && git plo; \
@@ -162,6 +170,25 @@ $(CACHE_DIR):
 
 $(DEPS_DIR):
 	mkdir -p $(DEPS_DIR)
+
+
+clean: clean-build
+
+clean-all: clean clean-deps clean-cache
+
+clean-build:
+	-$(RM) -r $(TGT_PRE)
+	-$(RM) $(LIB_DEP)
+	-$(RM) $(TST_DEP)
+	-$(RM) $(TST_SRC)
+
+clean-deps:
+	-$(RM) -r $(DEPS_DIR)
+	-$(RM) $(MLB_PATH_MAP)
+
+clean-cache:
+	-$(RM) -r $(CACHE_DIR)
+
 
 
 # TODO: Later
