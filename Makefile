@@ -91,7 +91,7 @@ test: $(TST_EXE)
 	$(TST_EXE)
 
 $(TST_EXE): $(TST_SRC) | $(TST_TGT)
-	@echo "[CP] $< -> $@"
+	@echo "  [CP] $< -> $@"
 	@cp $< $@
 
 $(TST_SRC): MLTON_FLAGS += -mlb-path-var "SMLUNIT_LIB $(SMLUNIT_LIB_DIR)" -mlb-path-var "SML_GRAPH_LIB $(LIB_DIR)"
@@ -171,6 +171,21 @@ $(CACHE_DIR):
 $(DEPS_DIR):
 	mkdir -p $(DEPS_DIR)
 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+
+# TODO: Later
+# - [ ] write install target
+#   needs the following:
+#   - [x] typecheck source target
+#   - [ ] create lib directory from PREFIX
+#   - [ ] compile w/ -stop f from src/sources.mlb
+#   - [ ] copy files listed in prev output to PREFIX/lib/sml-graph
+#   - [ ] alert success
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# utility scripts
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 clean: clean-build
 
@@ -188,14 +203,3 @@ clean-deps:
 
 clean-cache:
 	-$(RM) -r $(CACHE_DIR)
-
-
-
-# TODO: Later
-# - [ ] write install target
-#   needs the following:
-#   - [ ] typecheck source target
-#   - [ ] create lib directory from PREFIX
-#   - [ ] compile w/ -stop f from src/sources.mlb
-#   - [ ] copy files listed in prev output to PREFIX/lib/sml-graph
-#   - [ ] alert success

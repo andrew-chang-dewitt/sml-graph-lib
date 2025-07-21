@@ -1,6 +1,6 @@
 structure SMLGraph =
 struct
 
-  structure Hello = Hello
+  structure UndirectedGraph = UndirectedGraph
 
 end
