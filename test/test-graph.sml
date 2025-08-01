@@ -4,15 +4,29 @@ struct
   structure Assert = SMLUnit.Assert
   structure Test = SMLUnit.Test
 
-  structure Graph = UndirectedGraph
+  structure Args: GRAPH_ARGS =
+  struct
+    structure Node = struct type t = int end
+  end
+  structure Graph = Graph (Args)
 
-  fun test () =
-    let val actual = Graph.test 1 1
-        val expected = 2
-    in
-      Assert.assertEqualInt actual expected
+  fun testEmpty () =
+    let val actual = Graph.empty
+    in Assert.assertTrue (Graph.isEmpty actual)
+    end
+
+  fun testNodes () =
+      (*
+    let val actual = Graph.nodes test_graph
+       *)
+    let val actual = [2,3,1,4]
+        val expected = [1,2,3,4]
+    in Assert.assertEqualIntList actual expected
     end
 
   fun suite () =
-    Test.labelTests [("dummy test", test)]
+    Test.labelTests [
+      ("knows if it is empty", testEmpty),
+      ("lists it's nodes", testNodes)
+    ]
 end

@@ -1,5 +1,12 @@
 $(SML_LIB)/basis/basis.mlb
 
+set/sources.mlb
+
+exceptions.sig
+exceptions.sml
+node.sig
+graph-args.sig
+graph-types.sig
+graph-types.sml
 graph.sig
-undirected-graph.sml
-main.sml
+graph.sml

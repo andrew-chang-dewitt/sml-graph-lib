@@ -1,11 +1,18 @@
 signature GRAPH =
 sig
 
-  type Node
-  type 'b Adj = ('b * Node) list
-  type ('a, 'b) Context = 'b Adj * 't Node * 'a * 'b Adj
+  include EXCEPTIONS
+  include GRAPH_TYPES
 
-  datatype ('a, 'b) Graph = nil | ('a, 'b) Context * ('a, 'b) Graph
+  val empty : 'a graph
+
+  val nodes : 'a graph -> node list
+  val isEmpty : 'a graph -> bool
   
-  val test: int -> int -> int
+  val succ : node * 'a graph -> node list
+  val pred : node * 'a graph -> node list
+  val ufold : ('a context * 'b -> 'b) -> 'b -> 'a graph -> 'b
+  val gfold : ('a context * node list) -> ('a * 'b -> 'c) ->
+              ('c * 'b -> 'b) -> 'b -> node list -> 'a graph -> 'b
+
 end

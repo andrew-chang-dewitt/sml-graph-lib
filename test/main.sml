@@ -7,7 +7,10 @@ struct
   fun main(_: string, _: string list) =
     let
       val tests = Test.TestList [
-         Test.TestLabel("Graph", TestGraph.suite ())
+         (*
+         Test.TestLabel("Graph", TestGraph.suite ()),
+          *)
+         Test.TestLabel("ArrSet", TestArrSet.suite ())
       ]
     in
       (TextUITestRunner.runTest

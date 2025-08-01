@@ -56,7 +56,8 @@ SML_GRAPH_LIB := $(LIB_TGT)/.sml-graph-lib.dummy
 .PHONY: sml-graph-lib
 sml-graph-lib: $(SML_GRAPH_LIB)
 
-$(TST_MLB:.mlb=.mlb.d): MLTON_FLAGS += -mlb-path-var "SMLUNIT_LIB $(SMLUNIT_LIB_DIR)" -mlb-path-var "SML_GRAPH_LIB $(LIB_DIR)"
+$(TST_DEP): MLTON_FLAGS += -mlb-path-var "SMLUNIT_LIB $(SMLUNIT_LIB_DIR)" -mlb-path-var "SML_GRAPH_LIB $(LIB_DIR)"
+$(TST_DEP): $(LIB_MLB)
 %.mlb.d: %.mlb
 	@echo "  [GEN] $@"
 	@$(SHELL) -ec '$(MLTON) $(MLTON_FLAGS) -stop f $< \
@@ -193,8 +194,7 @@ clean-all: clean clean-deps clean-cache
 
 clean-build:
 	-$(RM) -r $(TGT_PRE)
-	-$(RM) $(LIB_DEP)
-	-$(RM) $(TST_DEP)
+	-$(RM) ./**/*.mlb.d
 	-$(RM) $(TST_SRC)
 
 clean-deps:
