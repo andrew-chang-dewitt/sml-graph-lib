@@ -10,7 +10,7 @@ struct
          (*
          Test.TestLabel("Graph", TestGraph.suite ()),
           *)
-         Test.TestLabel("ArrSet", TestArrSet.suite ())
+         Test.TestLabel("ListSet", TestListSet.suite ())
       ]
     in
       (TextUITestRunner.runTest

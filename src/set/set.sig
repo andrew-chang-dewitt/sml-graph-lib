@@ -6,9 +6,11 @@ sig
   val empty: unit -> set
   val from_list: t list -> set
 
-  val is_empty: set -> bool
   val length: set -> int
+  val is_empty: set -> bool
   val contains: set -> t -> bool
+
+  val all: (t -> bool) -> set -> bool
   val eq: set -> set -> bool
 
   val insert: set -> t -> set

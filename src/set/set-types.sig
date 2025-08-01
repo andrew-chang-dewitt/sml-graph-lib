@@ -1,5 +1,5 @@
 signature SET_TYPES =
 sig
-  type t
+  eqtype t
   type set
 end
