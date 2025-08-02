@@ -7,9 +7,7 @@ struct
   fun main(_: string, _: string list) =
     let
       val tests = Test.TestList [
-         (*
          Test.TestLabel("Graph", TestGraph.suite ()),
-          *)
          Test.TestLabel("ListSet", TestListSet.suite ())
       ]
     in

@@ -6,13 +6,15 @@ struct
 
   structure StrKey =
   struct
-    type t = string
+    type key = string
 
     fun eq l r = l = r
   end
 
   structure StrSet = ListSetFn(StrKey)
   open StrSet
+  structure U = Util(StrSet)
+  open U
 
   fun test_create_constructor () =
   let
@@ -89,20 +91,6 @@ struct
     in
       Assert.assertTrue  (eq a b)
     end
-
-  fun toString (Set s: set): string =
-    let
-      fun f []      = ""
-        | f [x]     = x
-        | f (x::xs) = x ^ ", " ^ (f xs)
-    in
-      "{ " ^ (f s) ^ " }"
-    end
-
-  fun assertEqualSet l r =
-    if (eq l r)
-    then ()
-    else raise Assert.Fail (Assert.NotEqualFailure ((toString l), (toString r)))
 
   fun test_custom_assert () =
     assertEqualSet (from_list ["A", "B"]) (from_list ["B", "A"])

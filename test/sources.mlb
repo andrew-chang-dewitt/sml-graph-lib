@@ -3,6 +3,6 @@ $(SMLUNIT_LIB)/src/sources.mlb
 
 ../src/sources.mlb
 test-graph.sml
-test-arr-set.sml
+test-list-set.sml
 main.sml
 call-main.sml

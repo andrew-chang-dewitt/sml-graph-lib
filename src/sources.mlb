@@ -1,11 +1,8 @@
 $(SML_LIB)/basis/basis.mlb
 
+util/sources.mlb
 set/sources.mlb
 
-exceptions.sig
-exceptions.sml
-node.sig
-graph-args.sig
 graph-types.sig
 graph-types.sml
 graph.sig

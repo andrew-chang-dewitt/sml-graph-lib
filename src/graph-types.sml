@@ -1,12 +1,15 @@
 functor GraphTypes (A: sig
-                         type 'a graph
-                         structure Node: NODE
+                         type node
+                         type adj
+                         type graph
                        end): GRAPH_TYPES =
 struct
 
-  type node = A.Node.t
-  type 'a graph = 'a A.graph
-  type 'a adj = 'a * node list
-  type 'a context = node list * node * 'a * node list
+  type node       = A.node
+  type graph      = A.graph
+  type adj        = A.adj
+  type ctx        = adj * node * adj
+  type decomp     = ctx * graph
+  type fwd_decomp = adj * graph
 
 end

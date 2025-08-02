@@ -1,18 +1,14 @@
 signature GRAPH =
 sig
 
-  include EXCEPTIONS
   include GRAPH_TYPES
 
-  val empty : 'a graph
+  val empty     : unit -> graph
+  val with_node : node -> graph
+  val add_node  : graph -> node -> graph
+  val add_nodes : graph -> node list -> graph
 
-  val nodes : 'a graph -> node list
-  val isEmpty : 'a graph -> bool
-  
-  val succ : node * 'a graph -> node list
-  val pred : node * 'a graph -> node list
-  val ufold : ('a context * 'b -> 'b) -> 'b -> 'a graph -> 'b
-  val gfold : ('a context * node list) -> ('a * 'b -> 'c) ->
-              ('c * 'b -> 'b) -> 'b -> node list -> 'a graph -> 'b
+  val is_empty  : graph -> bool
+  val nodes     : graph -> node list
 
 end

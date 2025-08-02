@@ -1,9 +1,6 @@
 signature GRAPH_ARGS =
 sig
 
-  structure Node: NODE
-  (*
-  structure FArr: FUN_ARRAY
-   *)
+  structure Node: KEY
 
 end

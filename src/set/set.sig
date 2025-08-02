@@ -4,17 +4,17 @@ sig
   include SET_TYPES
   
   val empty: unit -> set
-  val from_list: t list -> set
+  val from_list: node list -> set
 
   val length: set -> int
   val is_empty: set -> bool
-  val contains: set -> t -> bool
-
-  val all: (t -> bool) -> set -> bool
+  val contains: set -> node -> bool
+  val all: (node -> bool) -> set -> bool
   val eq: set -> set -> bool
 
-  val insert: set -> t -> set
+  val insert: set -> node -> set
 
-  val to_list: set -> t list
+  val foldr: ('a * node -> 'a) -> 'a -> set -> 'a
+  val to_list: set -> node list
 
 end

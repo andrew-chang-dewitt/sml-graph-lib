@@ -2,8 +2,10 @@ signature GRAPH_TYPES =
 sig
 
   type node
-  type 'a graph
-  type 'a adj = 'a * node list
-  type 'a context = node list * node * 'a * node list
+  type graph
+  type adj
+  type ctx        = adj * node * adj
+  type decomp     = ctx * graph
+  type fwd_decomp = adj * graph
 
 end
