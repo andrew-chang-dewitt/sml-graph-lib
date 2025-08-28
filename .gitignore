@@ -5,3 +5,10 @@
 # build artifacts
 *.smi
 target/
+
+# build dependencies
+.mlton/
+.cache/
+mlb-path-map
+test/sources
+*.mlb.d
