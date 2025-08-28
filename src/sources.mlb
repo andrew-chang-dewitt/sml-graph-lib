@@ -1,3 +1,9 @@
 $(SML_LIB)/basis/basis.mlb
 
-hello.sml
+util/sources.mlb
+set/sources.mlb
+
+graph-types.sig
+graph-types.sml
+graph.sig
+graph.sml
